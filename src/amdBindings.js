@@ -57,7 +57,7 @@ ko.bindingHandlers.module = {
         ko.computed({
             read: function() {
                 //module name could be in an observable
-                var initialArgs,
+                var initialArgs = [data],
                     moduleName = unwrap(value);
 
                 //observable could return an object that contains a name property
@@ -92,6 +92,11 @@ ko.bindingHandlers.module = {
                         }
 
                         //update the data that we are binding against
+                        extendedContext.$module = mod;
+                        templateBinding.data(mod);
+                    },
+                    function(err) {
+                        mod = data;
                         extendedContext.$module = mod;
                         templateBinding.data(mod);
                     });
