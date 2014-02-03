@@ -93,7 +93,7 @@ ko.bindingHandlers.module = {
         ko.computed({
             read: function() {
                 //module name could be in an observable
-                var initialArgs,
+                var initialArgs = [data],
                     moduleName = unwrap(value);
 
                 //observable could return an object that contains a name property
@@ -131,6 +131,11 @@ ko.bindingHandlers.module = {
                         extendedContext.$module = mod;
                         if (ko.bindingHandlers.module.map)
                         	ko.bindingHandlers.module.map(mod, data);
+                        templateBinding.data(mod);
+                    },
+                    function(err) {
+                        mod = data;
+                        extendedContext.$module = mod;
                         templateBinding.data(mod);
                     });
                 }
