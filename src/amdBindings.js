@@ -67,7 +67,7 @@ ko.bindingHandlers.module = {
                     disposeMethod = moduleName.disposeMethod || disposeMethod;
 
                     //get the current copy of data to pass into module
-                    initialArgs = [].concat(unwrap(moduleName.data));
+                    initialArgs = [].concat(unwrap(moduleName.data) || data);
 
                     //name property could be observable
                     moduleName = unwrap(moduleName.name);
