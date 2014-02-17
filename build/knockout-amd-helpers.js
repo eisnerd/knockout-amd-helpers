@@ -112,6 +112,23 @@ ko.bindingHandlers.module = {
                 //if there is a current module and it has a dispose callback, execute it and clear the data
                 disposeModule();
 
+                var apply_binding = function(mod) {
+                    var _apply_binding = function(mod) {
+                        extendedContext.$module = mod;
+                        if (ko.bindingHandlers.module.map)
+                            ko.bindingHandlers.module.map(mod, data);
+                        templateBinding.data(mod);
+                    };
+
+                    if (mod && mod.then) {
+                        //if this results in a promise, bind on fulfillment
+                        mod.then(_apply_binding);
+                    } else {
+                        //update the data that we are binding against
+                        _apply_binding(mod);
+                    }
+                };
+
                 //at this point, if we have a module name, then require it dynamically
                 if (moduleName) {
                     require([addTrailingSlash(ko.bindingHandlers.module.baseDir) + moduleName], function(mod) {
@@ -126,17 +143,10 @@ ko.bindingHandlers.module = {
                                 mod = mod[initializer].apply(mod, initialArgs || []) || mod;
                             }
                         }
-
-                        //update the data that we are binding against
-                        extendedContext.$module = mod;
-                        if (ko.bindingHandlers.module.map)
-                        	ko.bindingHandlers.module.map(mod, data);
-                        templateBinding.data(mod);
+                        apply_binding(mod);
                     },
                     function(err) {
-                        mod = data;
-                        extendedContext.$module = mod;
-                        templateBinding.data(mod);
+                        apply_binding(data);
                     });
                 }
             },
