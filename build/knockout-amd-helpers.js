@@ -58,20 +58,26 @@ ko.bindingHandlers.module = {
             };
         }
 
+        var classBinding = {};
+
         //if this is not an anonymous template, then build a function to properly return the template name
         if (!isAnonymous(element)) {
             templateBinding.name = function() {
                 var template = unwrap(value);
                 return ((template && typeof template === "object") ? unwrap(template.template || template.name) : template) || "";
             };
+            classBinding[templateBinding.name().replace(/\//g, '-')] = true;
         }
 
         //set the data to an observable, that we will fill when the module is ready
         templateBinding.data = ko.observable();
         templateBinding["if"] = templateBinding.data;
 
+        if (options.foreach)
+            templateBinding.foreach = options.foreach;
+
         //actually apply the template binding that we built. extend the context to include a $module property
-        ko.applyBindingsToNode(element, { template: templateBinding }, extendedContext = context.extend({ $module: null }));
+        ko.applyBindingsToNode(element, { template: templateBinding, css: classBinding }, extendedContext = context.extend({ $module: null }));
 
         //disposal function to use when a module is swapped or element is removed
         disposeModule = function() {
