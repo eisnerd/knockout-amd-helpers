@@ -20,6 +20,8 @@ ko.bindingHandlers.module = {
                     options.afterRender.apply(this, arguments);
                 }
             };
+
+            data = unwrap(options.data) || data;
         }
 
         var classBinding = {};
@@ -63,7 +65,7 @@ ko.bindingHandlers.module = {
         ko.computed({
             read: function() {
                 //module name could be in an observable
-                var initialArgs = [data],
+                var initialArgs = [].concat(data),
                     moduleName = unwrap(value);
 
                 //observable could return an object that contains a name property
