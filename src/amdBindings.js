@@ -85,16 +85,26 @@ ko.bindingHandlers.module = {
                 disposeModule();
 
                 var apply_binding = function(mod) {
+                    var _fail = function(reason) {
+                        if (options && typeof options.afterFailure === "function") {
+                            options.afterFailure.apply(mod, arguments);
+                        }
+                    };
                     var _apply_binding = function(mod) {
-                        extendedContext.$module = mod;
-                        if (ko.bindingHandlers.module.map)
-                            ko.bindingHandlers.module.map(mod, data);
-                        templateBinding.data(mod);
+                        try
+                        {
+                            extendedContext.$module = mod;
+                            if (ko.bindingHandlers.module.map)
+                                ko.bindingHandlers.module.map(mod, data);
+                            templateBinding.data(mod);
+                        } catch(e) {
+                            _fail(e);
+                        }
                     };
 
                     if (mod && mod.then) {
                         //if this results in a promise, bind on fulfillment
-                        mod.then(_apply_binding);
+                        mod.then(_apply_binding, _fail);
                     } else {
                         //update the data that we are binding against
                         _apply_binding(mod);
