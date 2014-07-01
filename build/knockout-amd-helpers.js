@@ -44,12 +44,21 @@ ko.bindingHandlers.module = {
             initializer = ko.bindingHandlers.module.initializer,
             disposeMethod = ko.bindingHandlers.module.disposeMethod;
 
+        templateBinding.afterRender = function() {
+            if (ko.bindingHandlers.module.afterRender)
+                ko.bindingHandlers.module.afterRender.apply(this, arguments);
+        };
+
         //build up a proper template binding object
         if (options && typeof options === "object") {
             templateBinding.templateEngine = options.templateEngine;
 
             //afterRender could be different for each module, create a wrapper
+            var _afterRender = templateBinding.afterRender;
             templateBinding.afterRender = function() {
+                if (_afterRender)
+                    _afterRender.apply(this, arguments);
+
                 var options = unwrap(valueAccessor());
 
                 if (options && typeof options.afterRender === "function") {
