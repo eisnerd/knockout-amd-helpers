@@ -10,7 +10,6 @@ var require = window.require || window.curl,
 
         Wrapper.prototype = Constructor.prototype;
         instance = new Wrapper();
-        instance.constructor = Constructor;
 
         return instance;
     },
